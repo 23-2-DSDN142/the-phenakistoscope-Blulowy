@@ -11,6 +11,7 @@ function setup_pScope(pScope){
   pScope.load_image("grass" , "png");
   pScope.load_image("void", "png");
   pScope.load_image("eye", "png");
+  pScope.load_image("bush", "png");
 }
 
 function setup_layers(pScope){
@@ -25,26 +26,30 @@ function setup_layers(pScope){
   layer2.mode( RING );
   layer2.set_boundary( 200, 1000 );
 
-  var layer3 = new PLayer(stars);
+  var layer3 = new PLayer(bush);
   layer3.mode( RING );
-  layer3.set_boundary( 0, 500 );
+  layer3.set_boundary( 200, 1000 );
 
-  var layer4 = new PLayer(voi);
+  var layer4 = new PLayer(stars);
   layer4.mode( RING );
-  layer4.set_boundary( 0, 1000 );
+  layer4.set_boundary( 0, 500 );
 
-  var layer5 = new PLayer(cir);
+  var layer5 = new PLayer(voi);
   layer5.mode( RING );
   layer5.set_boundary( 0, 1000 );
 
-  var layer6 = new PLayer(real);
-  layer6.mode(RING);
-  layer6.set_boundary(0, 500);
+  var layer6 = new PLayer(cir);
+  layer6.mode( RING );
+  layer6.set_boundary( 0, 1000 );
+
+  var layer7 = new PLayer(real);
+  layer7.mode(RING);
+  layer7.set_boundary(0, 500);
 }
 
 function grass(x, y, animation, pScope){
   push()
-  rotate(360*animation.wave());
+  rotate(360*animation.wave()/10);
   pScope.draw_image("grass", x, y);
   pop()
 }
@@ -54,8 +59,19 @@ function Killian(x, y, animation, pScope){
   pScope.draw_image_from_sequence("Ki", x, y, animation.frame);
 }
 
+function bush(x, y, animation, pScope){
+  if(animation.frame<0.08){
+  push()
+  rotate(360*animation.wave()/10);
+  pScope.draw_image("bush", x, y);
+  pop()}
+}
+
 function stars(x, y, animation, pScope){
   angleMode(DEGREES);
+  let StartC = color('#8fffba');
+  let EndC = color('#d8fff1');
+  let StarColour = lerpColor(StartC, EndC, animation.wave());
   // this is how you set up a background for a specific layer
   let angleOffset = (360 / SLICE_COUNT) / 2
   let backgroundArcStart = 270 - angleOffset;
@@ -64,10 +80,29 @@ function stars(x, y, animation, pScope){
   fill('#0e017a')
   arc(x,y,1100,1100,backgroundArcStart,backgroundArcEnd); // draws "pizza slice" in the background
 
-  fill('#8fffdf')
+  fill(StarColour)
   push()
+  translate(x, y-415)
+  rotate(animation.wave()*2);
+  scale(1-animation.wave()/20)
+  beginShape();
+  vertex(x, y+65);
+  vertex(x+20, y+23);
+  vertex(x+70, y+15);
+  vertex(x+30, y-13);
+  vertex(x+44, y-65);
+  vertex(x, y-33);
+  vertex(x-44, y-65);
+  vertex(x-30, y-13);
+  vertex(x-70, y+15);
+  vertex(x-20, y+23);
+  endShape(CLOSE);
+  pop()
+
+  /*push()
   translate(x, y-30)
   rotate(animation.wave());
+  scale(1-animation.wave()/20)
   beginShape();
   vertex(x, y-350);
   vertex(x+20, y-392);
@@ -80,7 +115,7 @@ function stars(x, y, animation, pScope){
   vertex(x-70, y-400);
   vertex(x-20, y-392);
   endShape(CLOSE);
-  pop()
+  pop()*/
 
   push()
   translate(x-50, y-260);
